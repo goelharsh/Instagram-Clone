@@ -108,7 +108,7 @@ export const getProfile = async (req, res) => {
   try {
     // in instagram we can open any user profile as well as our profile
     const userId = req.params.id;
-    let user = await User.findById(userId);
+    let user = await User.findById(userId).select("-password");
     console.log(user);
     return res.status(200).json({
       message: "User fetched successfully",
@@ -124,6 +124,7 @@ export const editProfile = async (req, res) => {
   try {
     // we can update profile of only logged in user
     // token is present in cookie, so token will be get from that cookie, as there is userid in token, now to decode the token we will make the middleware
+
     const userId = req.id;
     const { bio, gender } = req.body;
     const profilePicture = req.file;
@@ -133,7 +134,7 @@ export const editProfile = async (req, res) => {
       cloudResponse = await cloudinary.uploader.upload(fileUri);
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("-password");
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -145,7 +146,7 @@ export const editProfile = async (req, res) => {
     if (gender) user.gender = gender;
     if (profilePicture) user.profilePicture = cloudResponse.secure_url;
 
-    await User.save();
+    await user.save();
     return res.status(200).json({
       message: "Profile updated successfully",
       user,
@@ -190,6 +191,7 @@ export const followOrUnfollow = async (req, res) => {
       });
     }
 
+    // check whether user present in database or not 
     const user = await User.findById(followKrneWala);
     const targetUser = await User.findById(jiskoFollowKrnaHai);
 
@@ -202,17 +204,19 @@ export const followOrUnfollow = async (req, res) => {
 
     // checking if user has to be followed or unfollowed
     // if it is found, then it measn pehle hi follow kra hua hai , there fore we have to unfollow the user
+
+    // there for me check krunga ki follow krna hai ya unfollow 
     const isFollowing = user.following.includes(jiskoFollowKrnaHai);
     if (isFollowing) {
       // then unfollow the user
       await Promise.all([
         User.updateOne(
           { _id: followKrneWala },
-          { $pull: { following: jiskoFollowKrnaHai } }
+          { $push: { following: jiskoFollowKrnaHai } }
         ),
         User.updateOne(
           { _id: jiskoFollowKrnaHai },
-          { $pull: { following: followKrneWala } }
+          { $pull: { followers: followKrneWala } }
         ),
       ]);
       return res.status(200).json({
@@ -227,7 +231,7 @@ export const followOrUnfollow = async (req, res) => {
         ),
         User.updateOne(
           { _id: jiskoFollowKrnaHai },
-          { $push: { following: followKrneWala } }
+          { $push: { followers: followKrneWala } }
         ),
       ]);
       return res.status(200).json({

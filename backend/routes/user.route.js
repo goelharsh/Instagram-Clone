@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.route("/register").post(register);
 router.route("/login").post(login);
-router.route("/logout").get(logout);
+router.route("/logout").post(logout);
 router.route("/:id/getProfile").get(isAuthenticated, getProfile);
 router
   .route("/editProfile")
@@ -23,4 +23,4 @@ router
 router.route("/getSuggestedUsers").get(isAuthenticated, getSuggestedUsers);
 router.route("/followOrUnfollow/:id").post(isAuthenticated, followOrUnfollow);
 
-export default router
+export default router  
