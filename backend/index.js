@@ -6,8 +6,9 @@ import connectDB from "./utils/db.js";
 import userRoute from "../backend/routes/user.route.js"
 import postRoute from "../backend/routes/post.route.js"
 import messageRoute from "../backend/routes/message.route.js"
+import {app, server} from "./socket/socket.js"
 configDotenv();
-const app = express();
+// const app = express();
 const PORT = process.env.PORT || 3000
 
 //middlewares
@@ -24,15 +25,17 @@ app.use(cookieParser());
 app.use(urlencoded({extended:true}));
 const corsOptions = {
     origin:"http://localhost:5173",
-    credential:true
+    credentials:true,
 }
+app.use(cors(corsOptions));
+
 app.use(cors(corsOptions))
 
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
 
-app.listen(PORT, ()=>{
+server.listen(PORT, ()=>{
     connectDB()
     console.log(`Server running at ${PORT}`);
 })
