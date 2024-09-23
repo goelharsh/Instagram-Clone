@@ -7,9 +7,13 @@ import userRoute from "../backend/routes/user.route.js"
 import postRoute from "../backend/routes/post.route.js"
 import messageRoute from "../backend/routes/message.route.js"
 import {app, server} from "./socket/socket.js"
+import path from "path"
 configDotenv();
 // const app = express();
 const PORT = process.env.PORT || 3000
+
+// it will provide the complete path of our backend directory 
+const __dirname = path.resolve();
 
 //middlewares
 app.get("/", (req,res)=>{
@@ -34,6 +38,11 @@ app.use(cors(corsOptions))
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
+
+app.use(express.static(path.join(__dirname, "/frontend/dist")));
+app.get("*", (req,res)=>{
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+})
 
 server.listen(PORT, ()=>{
     connectDB()
