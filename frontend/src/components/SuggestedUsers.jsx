@@ -9,7 +9,7 @@ const baseurl = import.meta.env.VITE_APP_BASE_URL
 const SuggestedUsers = () => {
     const { suggestedUsers } = useSelector(store => store.auth);
     const { user } = useSelector((store) => store.auth);
-    const followKrneWala = user._id;
+    const followKrneWala = user?._id;
 
     const followHandler = async (id) => {
         try {
@@ -30,7 +30,7 @@ const SuggestedUsers = () => {
             {
                 suggestedUsers.map((user) => {
                     return (
-                        <div key={user._id} className='flex items-center justify-between my-5'>
+                        <div key={user?._id} className='flex items-center justify-between my-5'>
                             <div className='flex items-center gap-2'>
                                 <Link to={`/profile/${user?._id}`}>
                                     <Avatar>
@@ -43,7 +43,7 @@ const SuggestedUsers = () => {
                                     <span className='text-gray-600 text-sm'>{user?.bio || 'Bio here...'}</span>
                                 </div>
                             </div>
-                            <span className='text-[#3BADF8] text-xs font-bold cursor-pointer hover:text-[#3495d6]' onClick={()=>followHandler(user._id)}>Follow</span>
+                            <span className='text-[#3BADF8] text-xs font-bold cursor-pointer hover:text-[#3495d6]' onClick={()=>followHandler(user?._id)}>Follow</span>
                         </div>
                     )   
                 })
